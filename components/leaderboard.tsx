@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Prediction, MatchWithTeams } from '@/lib/types'
+import { Trophy, Target, TrendingUp } from 'lucide-react'
 
 interface LeaderboardProps {
   members: { user_id: string; display_name: string }[]
@@ -101,65 +101,108 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
   const completedMatchCount = matches.filter(m => m.is_completed).length
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Leaderboard</span>
-          <span className="text-sm font-normal text-muted-foreground">
-            {completedMatchCount} / {matches.length} matches played
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {leaderboard.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
-            No members yet
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {leaderboard.map((entry, index) => {
-              const isCurrentUser = entry.user_id === currentUserId
-              const position = index + 1
-              
-              return (
-                <div
-                  key={entry.user_id}
-                  className={`flex items-center gap-4 p-3 rounded-lg ${
-                    isCurrentUser ? 'bg-primary/10 border border-primary/20' : 'bg-card border'
-                  }`}
-                >
-                  {/* Position */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    position === 1 ? 'bg-gold text-gold-foreground' :
-                    position === 2 ? 'bg-silver text-silver-foreground' :
-                    position === 3 ? 'bg-bronze text-bronze-foreground' :
-                    'bg-muted text-muted-foreground'
-                  }`}>
-                    {position}
-                  </div>
-
-                  {/* Name */}
-                  <div className="flex-1 min-w-0">
-                    <p className={`font-semibold truncate ${isCurrentUser ? 'text-primary' : ''}`}>
-                      {entry.display_name}
-                      {isCurrentUser && <span className="text-xs ml-2">(You)</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {entry.exact_scores} exact, {entry.correct_results} correct
-                    </p>
-                  </div>
-
-                  {/* Points */}
-                  <div className="text-right">
-                    <p className="text-2xl font-bold">{entry.total_points}</p>
-                    <p className="text-xs text-muted-foreground">pts</p>
-                  </div>
-                </div>
-              )
-            })}
+    <div className="bg-card rounded-lg overflow-hidden">
+      {/* Header - Sky Sports style */}
+      <div className="bg-primary px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-primary-foreground" />
+            <h2 className="font-bold text-primary-foreground">LEADERBOARD</h2>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <span className="text-xs text-primary-foreground/80">
+            {completedMatchCount}/{matches.length} played
+          </span>
+        </div>
+      </div>
+
+      {/* Table header */}
+      <div className="bg-secondary/50 px-4 py-2 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 text-xs font-bold text-muted-foreground uppercase">
+        <span className="w-8">#</span>
+        <span>Player</span>
+        <span className="text-center w-12" title="Exact Scores">
+          <Target className="h-3 w-3 inline" />
+        </span>
+        <span className="text-center w-12" title="Correct Results">
+          <TrendingUp className="h-3 w-3 inline" />
+        </span>
+        <span className="text-right w-16">PTS</span>
+      </div>
+
+      {/* Leaderboard entries */}
+      {leaderboard.length === 0 ? (
+        <div className="text-center text-muted-foreground py-12">
+          <p className="font-semibold">No members yet</p>
+          <p className="text-sm">Invite your friends to join!</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border">
+          {leaderboard.map((entry, index) => {
+            const isCurrentUser = entry.user_id === currentUserId
+            const position = index + 1
+            
+            return (
+              <div
+                key={entry.user_id}
+                className={`px-4 py-3 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center transition-colors ${
+                  isCurrentUser ? 'bg-primary/10' : 'hover:bg-secondary/30'
+                }`}
+              >
+                {/* Position */}
+                <div className={`w-8 h-8 rounded flex items-center justify-center font-black text-sm ${
+                  position === 1 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black' :
+                  position === 2 ? 'bg-gradient-to-br from-slate-300 to-slate-500 text-black' :
+                  position === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-black' :
+                  'bg-muted text-muted-foreground'
+                }`}>
+                  {position}
+                </div>
+
+                {/* Name */}
+                <div className="min-w-0">
+                  <p className={`font-semibold truncate ${isCurrentUser ? 'text-primary' : 'text-foreground'}`}>
+                    {entry.display_name}
+                  </p>
+                  {isCurrentUser && (
+                    <span className="text-[10px] text-primary uppercase font-bold">You</span>
+                  )}
+                </div>
+
+                {/* Exact scores */}
+                <span className="text-center w-12 tabular-nums font-semibold text-muted-foreground">
+                  {entry.exact_scores}
+                </span>
+
+                {/* Correct results */}
+                <span className="text-center w-12 tabular-nums font-semibold text-muted-foreground">
+                  {entry.correct_results}
+                </span>
+
+                {/* Points */}
+                <div className="text-right w-16">
+                  <span className={`text-xl font-black tabular-nums ${
+                    position === 1 ? 'text-amber-400' :
+                    position === 2 ? 'text-slate-400' :
+                    position === 3 ? 'text-orange-400' :
+                    'text-foreground'
+                  }`}>
+                    {entry.total_points}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Footer legend */}
+      <div className="bg-secondary/30 px-4 py-2 flex items-center gap-4 text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <Target className="h-3 w-3" /> Exact Score (+5)
+        </span>
+        <span className="flex items-center gap-1">
+          <TrendingUp className="h-3 w-3" /> Correct Result (+2/+3)
+        </span>
+      </div>
+    </div>
   )
 }

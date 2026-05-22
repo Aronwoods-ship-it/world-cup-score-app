@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -51,23 +50,35 @@ export default function SignUpPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Join Da Boyz
-          </CardTitle>
-          <CardDescription className="text-base">
-            Create your account to start predicting
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSignUp}>
-          <CardContent className="space-y-4">
+    <main className="min-h-screen flex flex-col bg-background">
+      {/* Header */}
+      <header className="bg-sky-navy border-b border-border">
+        <div className="container mx-auto px-4 h-14 flex items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="bg-primary px-2 py-1 rounded">
+              <span className="font-black text-sm text-primary-foreground tracking-tight">SCORES</span>
+            </div>
+            <span className="font-bold text-foreground">Da Boyz and Ting</span>
+          </Link>
+        </div>
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm">
+          {/* Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-black tracking-tight mb-1">Join the Competition</h1>
+            <p className="text-muted-foreground">Create your account to start predicting</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSignUp} className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-lg">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg">
                 {error}
               </div>
             )}
+            
             <div className="space-y-2">
               <Label htmlFor="displayName">Display Name</Label>
               <Input
@@ -80,11 +91,13 @@ export default function SignUpPage() {
                 minLength={2}
                 maxLength={30}
                 autoComplete="nickname"
+                className="h-12 text-base"
               />
               <p className="text-xs text-muted-foreground">
-                This is how other players will see you
+                This is how other players will see you on the leaderboard
               </p>
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -95,8 +108,10 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                className="h-12 text-base"
               />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -108,25 +123,27 @@ export default function SignUpPage() {
                 required
                 minLength={6}
                 autoComplete="new-password"
+                className="h-12 text-base"
               />
               <p className="text-xs text-muted-foreground">
                 At least 6 characters
               </p>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+
+            <Button type="submit" className="w-full h-12 text-base font-bold" disabled={loading}>
               {loading ? 'Creating account...' : 'Create Account'}
             </Button>
-            <p className="text-sm text-muted-foreground text-center">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="text-primary hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+
+          {/* Footer */}
+          <p className="text-sm text-muted-foreground text-center mt-6">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-primary font-semibold hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
     </main>
   )
 }

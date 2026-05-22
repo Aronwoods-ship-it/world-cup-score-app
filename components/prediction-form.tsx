@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import type { MatchWithTeams, Prediction } from '@/lib/types'
+import { Minus, Plus } from 'lucide-react'
 
 interface PredictionFormProps {
   match: MatchWithTeams
@@ -24,29 +24,28 @@ export function PredictionForm({
   onClose,
 }: PredictionFormProps) {
   const [homeScore, setHomeScore] = useState(
-    existingPrediction?.predicted_home_score?.toString() || ''
+    existingPrediction?.predicted_home_score ?? 0
   )
   const [awayScore, setAwayScore] = useState(
-    existingPrediction?.predicted_away_score?.toString() || ''
+    existingPrediction?.predicted_away_score ?? 0
   )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
+  const adjustScore = (team: 'home' | 'away', delta: number) => {
+    if (team === 'home') {
+      setHomeScore(Math.max(0, Math.min(20, homeScore + delta)))
+    } else {
+      setAwayScore(Math.max(0, Math.min(20, awayScore + delta)))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
-
-    const homeScoreNum = parseInt(homeScore)
-    const awayScoreNum = parseInt(awayScore)
-
-    if (isNaN(homeScoreNum) || isNaN(awayScoreNum) || homeScoreNum < 0 || awayScoreNum < 0) {
-      setError('Please enter valid scores')
-      setLoading(false)
-      return
-    }
 
     // Check if match is locked
     const matchDate = new Date(match.match_date)
@@ -61,8 +60,8 @@ export function PredictionForm({
       const { error: updateError } = await supabase
         .from('predictions')
         .update({
-          predicted_home_score: homeScoreNum,
-          predicted_away_score: awayScoreNum,
+          predicted_home_score: homeScore,
+          predicted_away_score: awayScore,
           updated_at: new Date().toISOString(),
         })
         .eq('id', existingPrediction.id)
@@ -80,8 +79,8 @@ export function PredictionForm({
           user_id: userId,
           group_id: groupId,
           match_id: match.id,
-          predicted_home_score: homeScoreNum,
-          predicted_away_score: awayScoreNum,
+          predicted_home_score: homeScore,
+          predicted_away_score: awayScore,
         })
 
       if (insertError) {
@@ -96,53 +95,93 @@ export function PredictionForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border-t pt-4 mt-2 space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <div className="p-2 text-xs text-destructive bg-destructive/10 rounded">
           {error}
         </div>
       )}
       
-      <div className="flex items-center justify-center gap-4">
-        <div className="text-center">
-          <Label htmlFor="homeScore" className="text-xs text-muted-foreground block mb-1">
-            {match.home_team.code}
-          </Label>
-          <Input
-            id="homeScore"
-            type="number"
-            min="0"
-            max="20"
-            value={homeScore}
-            onChange={(e) => setHomeScore(e.target.value)}
-            className="w-16 text-center text-lg font-mono"
-            required
-          />
+      <div className="flex items-center justify-center gap-6">
+        {/* Home Team */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs font-bold text-muted-foreground uppercase">{match.home_team.code}</span>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => adjustScore('home', -1)}
+              disabled={homeScore <= 0}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <Input
+              type="number"
+              min="0"
+              max="20"
+              value={homeScore}
+              onChange={(e) => setHomeScore(Math.max(0, Math.min(20, parseInt(e.target.value) || 0)))}
+              className="w-14 h-12 text-center text-xl font-bold tabular-nums"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => adjustScore('home', 1)}
+              disabled={homeScore >= 20}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <span className="text-muted-foreground">-</span>
-        <div className="text-center">
-          <Label htmlFor="awayScore" className="text-xs text-muted-foreground block mb-1">
-            {match.away_team.code}
-          </Label>
-          <Input
-            id="awayScore"
-            type="number"
-            min="0"
-            max="20"
-            value={awayScore}
-            onChange={(e) => setAwayScore(e.target.value)}
-            className="w-16 text-center text-lg font-mono"
-            required
-          />
+
+        <span className="text-2xl font-bold text-muted-foreground">-</span>
+
+        {/* Away Team */}
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs font-bold text-muted-foreground uppercase">{match.away_team.code}</span>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => adjustScore('away', -1)}
+              disabled={awayScore <= 0}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <Input
+              type="number"
+              min="0"
+              max="20"
+              value={awayScore}
+              onChange={(e) => setAwayScore(Math.max(0, Math.min(20, parseInt(e.target.value) || 0)))}
+              className="w-14 h-12 text-center text-xl font-bold tabular-nums"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => adjustScore('away', 1)}
+              disabled={awayScore >= 20}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="flex gap-2">
-        <Button type="button" variant="ghost" size="sm" onClick={onClose} className="flex-1">
+        <Button type="button" variant="ghost" onClick={onClose} className="flex-1 h-11">
           Cancel
         </Button>
-        <Button type="submit" size="sm" disabled={loading} className="flex-1">
-          {loading ? 'Saving...' : 'Save Prediction'}
+        <Button type="submit" disabled={loading} className="flex-1 h-11 font-bold">
+          {loading ? 'Saving...' : existingPrediction ? 'Update' : 'Save Prediction'}
         </Button>
       </div>
     </form>

@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
 
 interface CreateGroupFormProps {
   userId: string
@@ -72,32 +71,31 @@ export function CreateGroupForm({ userId }: CreateGroupFormProps) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg">
-              {error}
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="groupName">Group Name</Label>
-            <Input
-              id="groupName"
-              type="text"
-              placeholder="e.g., The Lads"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              minLength={2}
-              maxLength={50}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Group'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded">
+          {error}
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="groupName" className="text-xs uppercase font-semibold text-muted-foreground">
+          Group Name
+        </Label>
+        <Input
+          id="groupName"
+          type="text"
+          placeholder="e.g., The Lads"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          minLength={2}
+          maxLength={50}
+          className="h-11"
+        />
+      </div>
+      <Button type="submit" className="w-full h-11 font-bold" disabled={loading}>
+        {loading ? 'Creating...' : 'Create Group'}
+      </Button>
+    </form>
   )
 }

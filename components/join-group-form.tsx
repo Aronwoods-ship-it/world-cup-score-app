@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
 
 interface JoinGroupFormProps {
   userId: string
@@ -73,32 +72,30 @@ export function JoinGroupForm({ userId }: JoinGroupFormProps) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg">
-              {error}
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="inviteCode">Invite Code</Label>
-            <Input
-              id="inviteCode"
-              type="text"
-              placeholder="e.g., ABC123"
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              required
-              maxLength={6}
-              className="font-mono uppercase"
-            />
-          </div>
-          <Button type="submit" variant="outline" className="w-full" disabled={loading}>
-            {loading ? 'Joining...' : 'Join Group'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded">
+          {error}
+        </div>
+      )}
+      <div className="space-y-2">
+        <Label htmlFor="inviteCode" className="text-xs uppercase font-semibold text-muted-foreground">
+          Invite Code
+        </Label>
+        <Input
+          id="inviteCode"
+          type="text"
+          placeholder="e.g., ABC123"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          required
+          maxLength={6}
+          className="font-mono uppercase h-11 text-center text-lg tracking-widest"
+        />
+      </div>
+      <Button type="submit" variant="outline" className="w-full h-11 font-bold" disabled={loading}>
+        {loading ? 'Joining...' : 'Join Group'}
+      </Button>
+    </form>
   )
 }
