@@ -26,7 +26,6 @@ function calculatePoints(
   actualHome: number,
   actualAway: number
 ): { points: number; isExact: boolean; isCorrectResult: boolean } {
-  // Exact score: 5 points
   if (predictedHome === actualHome && predictedAway === actualAway) {
     return { points: 5, isExact: true, isCorrectResult: true }
   }
@@ -34,21 +33,17 @@ function calculatePoints(
   const predictedDiff = predictedHome - predictedAway
   const actualDiff = actualHome - actualAway
   
-  // Get result type
   const predictedResult = predictedHome > predictedAway ? 'home' : predictedHome < predictedAway ? 'away' : 'draw'
   const actualResult = actualHome > actualAway ? 'home' : actualHome < actualAway ? 'away' : 'draw'
 
-  // Correct result and goal difference: 3 points
   if (predictedResult === actualResult && predictedDiff === actualDiff) {
     return { points: 3, isExact: false, isCorrectResult: true }
   }
 
-  // Correct result only: 2 points
   if (predictedResult === actualResult) {
     return { points: 2, isExact: false, isCorrectResult: true }
   }
 
-  // Wrong: 0 points
   return { points: 0, isExact: false, isCorrectResult: false }
 }
 
@@ -90,7 +85,6 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
       }
     })
 
-    // Sort by points, then by exact scores, then by correct results
     return entries.sort((a, b) => {
       if (b.total_points !== a.total_points) return b.total_points - a.total_points
       if (b.exact_scores !== a.exact_scores) return b.exact_scores - a.exact_scores
@@ -101,41 +95,41 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
   const completedMatchCount = matches.filter(m => m.is_completed).length
 
   return (
-    <div className="bg-card rounded-lg overflow-hidden">
+    <div className="bg-white border border-[#e0e0e0] rounded overflow-hidden">
       {/* Header - Sky Sports style */}
-      <div className="bg-primary px-4 py-3">
+      <div className="bg-[#001538] px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary-foreground" />
-            <h2 className="font-bold text-primary-foreground">LEADERBOARD</h2>
+            <Trophy className="h-5 w-5 text-white" />
+            <h2 className="font-bold text-white text-sm">LEADERBOARD</h2>
           </div>
-          <span className="text-xs text-primary-foreground/80">
+          <span className="text-xs text-white/70">
             {completedMatchCount}/{matches.length} played
           </span>
         </div>
       </div>
 
       {/* Table header */}
-      <div className="bg-secondary/50 px-4 py-2 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 text-xs font-bold text-muted-foreground uppercase">
-        <span className="w-8">#</span>
+      <div className="bg-[#f5f5f5] px-4 py-2 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 text-xs font-semibold text-[#666] uppercase border-b border-[#e0e0e0]">
+        <span className="w-8 text-center">#</span>
         <span>Player</span>
-        <span className="text-center w-12" title="Exact Scores">
+        <span className="text-center w-10" title="Exact Scores">
           <Target className="h-3 w-3 inline" />
         </span>
-        <span className="text-center w-12" title="Correct Results">
+        <span className="text-center w-10" title="Correct Results">
           <TrendingUp className="h-3 w-3 inline" />
         </span>
-        <span className="text-right w-16">PTS</span>
+        <span className="text-right w-14">PTS</span>
       </div>
 
       {/* Leaderboard entries */}
       {leaderboard.length === 0 ? (
-        <div className="text-center text-muted-foreground py-12">
+        <div className="text-center text-[#666] py-12">
           <p className="font-semibold">No members yet</p>
           <p className="text-sm">Invite your friends to join!</p>
         </div>
       ) : (
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-[#e0e0e0]">
           {leaderboard.map((entry, index) => {
             const isCurrentUser = entry.user_id === currentUserId
             const position = index + 1
@@ -143,47 +137,45 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
             return (
               <div
                 key={entry.user_id}
-                className={`px-4 py-3 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center transition-colors ${
-                  isCurrentUser ? 'bg-primary/10' : 'hover:bg-secondary/30'
+                className={`px-4 py-3 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center ${
+                  isCurrentUser ? 'bg-[#fff9e6]' : 'hover:bg-[#f8f8f8]'
                 }`}
               >
                 {/* Position */}
-                <div className={`w-8 h-8 rounded flex items-center justify-center font-black text-sm ${
-                  position === 1 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black' :
-                  position === 2 ? 'bg-gradient-to-br from-slate-300 to-slate-500 text-black' :
-                  position === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-black' :
-                  'bg-muted text-muted-foreground'
+                <div className={`w-8 h-8 rounded flex items-center justify-center font-bold text-sm ${
+                  position === 1 ? 'pos-1' :
+                  position === 2 ? 'pos-2' :
+                  position === 3 ? 'pos-3' :
+                  'bg-[#f0f0f0] text-[#666]'
                 }`}>
                   {position}
                 </div>
 
                 {/* Name */}
                 <div className="min-w-0">
-                  <p className={`font-semibold truncate ${isCurrentUser ? 'text-primary' : 'text-foreground'}`}>
+                  <p className={`font-semibold text-sm truncate ${isCurrentUser ? 'text-[#cc0000]' : 'text-[#001538]'}`}>
                     {entry.display_name}
+                    {isCurrentUser && <span className="text-[10px] text-[#cc0000] ml-1">(You)</span>}
                   </p>
-                  {isCurrentUser && (
-                    <span className="text-[10px] text-primary uppercase font-bold">You</span>
-                  )}
                 </div>
 
                 {/* Exact scores */}
-                <span className="text-center w-12 tabular-nums font-semibold text-muted-foreground">
+                <span className="text-center w-10 tabular-nums font-semibold text-[#666] text-sm">
                   {entry.exact_scores}
                 </span>
 
                 {/* Correct results */}
-                <span className="text-center w-12 tabular-nums font-semibold text-muted-foreground">
+                <span className="text-center w-10 tabular-nums font-semibold text-[#666] text-sm">
                   {entry.correct_results}
                 </span>
 
                 {/* Points */}
-                <div className="text-right w-16">
-                  <span className={`text-xl font-black tabular-nums ${
-                    position === 1 ? 'text-amber-400' :
-                    position === 2 ? 'text-slate-400' :
-                    position === 3 ? 'text-orange-400' :
-                    'text-foreground'
+                <div className="text-right w-14">
+                  <span className={`text-lg font-bold tabular-nums ${
+                    position === 1 ? 'text-[#b8860b]' :
+                    position === 2 ? 'text-[#808080]' :
+                    position === 3 ? 'text-[#cd7f32]' :
+                    'text-[#001538]'
                   }`}>
                     {entry.total_points}
                   </span>
@@ -195,12 +187,12 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
       )}
 
       {/* Footer legend */}
-      <div className="bg-secondary/30 px-4 py-2 flex items-center gap-4 text-[10px] text-muted-foreground">
+      <div className="bg-[#f5f5f5] px-4 py-2 flex items-center gap-4 text-[10px] text-[#666] border-t border-[#e0e0e0]">
         <span className="flex items-center gap-1">
-          <Target className="h-3 w-3" /> Exact Score (+5)
+          <Target className="h-3 w-3" /> Exact (+5)
         </span>
         <span className="flex items-center gap-1">
-          <TrendingUp className="h-3 w-3" /> Correct Result (+2/+3)
+          <TrendingUp className="h-3 w-3" /> Result (+2/+3)
         </span>
       </div>
     </div>

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, User, LogOut, HelpCircle } from 'lucide-react'
+import { User, LogOut, HelpCircle, ChevronDown } from 'lucide-react'
 
 interface DashboardHeaderProps {
   displayName: string
@@ -32,77 +32,88 @@ export function DashboardHeader({ displayName }: DashboardHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-sky-navy border-b border-border">
-      <div className="container mx-auto px-4">
-        {/* Top bar with logo and user menu */}
-        <div className="h-14 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="bg-primary px-2 py-1 rounded">
-              <span className="font-black text-sm text-primary-foreground tracking-tight">SCORES</span>
-            </div>
-            <span className="font-bold text-foreground hidden sm:inline">Da Boyz and Ting</span>
-          </Link>
+    <header className="sticky top-0 z-50">
+      {/* Top bar - Navy gradient like Sky Sports */}
+      <div className="sky-header">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="h-12 flex items-center justify-between">
+            {/* Logo area */}
+            <Link href="/dashboard" className="flex items-center gap-1.5">
+              <span className="text-white font-light text-lg tracking-tight">da boyz</span>
+              <span className="bg-[#cc0000] text-white font-bold text-sm px-1.5 py-0.5 rounded-sm">scores</span>
+            </Link>
 
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
-              <Link href="/how-to-play">
-                <HelpCircle className="h-4 w-4 mr-1" />
+            {/* Right side actions */}
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/how-to-play"
+                className="hidden sm:flex items-center gap-1 text-white/80 hover:text-white text-sm transition-colors"
+              >
+                <HelpCircle className="h-4 w-4" />
                 How to Play
               </Link>
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">{displayName}</span>
-                  <Menu className="h-4 w-4 sm:hidden" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem disabled className="text-muted-foreground">
-                  <User className="h-4 w-4 mr-2" />
-                  {displayName}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/how-to-play" className="flex items-center">
-                    <HelpCircle className="h-4 w-4 mr-2" />
-                    How to Play
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} disabled={loading} className="text-destructive">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {loading ? 'Signing out...' : 'Sign Out'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-1.5 text-white/90 hover:text-white text-sm transition-colors">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">{displayName}</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem disabled className="text-muted-foreground text-sm">
+                    <User className="h-4 w-4 mr-2" />
+                    {displayName}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/how-to-play" className="flex items-center text-sm">
+                      <HelpCircle className="h-4 w-4 mr-2" />
+                      How to Play
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleSignOut} 
+                    disabled={loading} 
+                    className="text-[#cc0000] text-sm"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {loading ? 'Signing out...' : 'Sign Out'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
-
-        {/* Navigation bar */}
-        <nav className="flex items-center gap-1 -mb-px overflow-x-auto pb-px">
-          <Link 
-            href="/dashboard" 
-            className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors whitespace-nowrap"
-          >
-            My Groups
-          </Link>
-          <Link 
-            href="/dashboard" 
-            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors whitespace-nowrap"
-          >
-            Leaderboard
-          </Link>
-          <Link 
-            href="/dashboard" 
-            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary border-b-2 border-transparent hover:border-primary transition-colors whitespace-nowrap"
-          >
-            Fixtures
-          </Link>
-        </nav>
       </div>
+
+      {/* Navigation bar - White background like Sky Sports */}
+      <nav className="bg-white border-b border-[#e0e0e0]">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center gap-0 overflow-x-auto">
+            <Link 
+              href="/dashboard" 
+              className="px-4 py-3 text-sm font-medium text-[#001538] hover:text-[#cc0000] border-b-2 border-[#cc0000] transition-colors whitespace-nowrap"
+            >
+              My Groups
+            </Link>
+            <Link 
+              href="/dashboard" 
+              className="px-4 py-3 text-sm font-medium text-[#666] hover:text-[#cc0000] border-b-2 border-transparent hover:border-[#cc0000] transition-colors whitespace-nowrap"
+            >
+              Fixtures
+            </Link>
+            <Link 
+              href="/dashboard" 
+              className="px-4 py-3 text-sm font-medium text-[#666] hover:text-[#cc0000] border-b-2 border-transparent hover:border-[#cc0000] transition-colors whitespace-nowrap"
+            >
+              Leaderboards
+            </Link>
+          </div>
+        </div>
+      </nav>
     </header>
   )
 }

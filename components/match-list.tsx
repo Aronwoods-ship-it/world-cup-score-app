@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Button } from '@/components/ui/button'
 import { PredictionForm } from '@/components/prediction-form'
 import type { MatchWithTeams, Prediction } from '@/lib/types'
-import { ChevronDown, ChevronUp, Lock, Check } from 'lucide-react'
+import { Lock, Check, ChevronRight } from 'lucide-react'
 
 interface MatchListProps {
   matches: MatchWithTeams[]
@@ -19,7 +18,7 @@ function getMatchStatus(match: MatchWithTeams): 'FT' | 'LIVE' | 'HT' | 'upcoming
   if (match.is_completed) return 'FT'
   const now = new Date()
   const matchDate = new Date(match.match_date)
-  if (matchDate <= now) return 'LIVE' // Simplified - in reality you'd check actual live status
+  if (matchDate <= now) return 'LIVE'
   return 'upcoming'
 }
 
@@ -34,7 +33,7 @@ function formatMatchDate(date: Date): string {
   if (date.toDateString() === tomorrow.toDateString()) {
     return 'Tomorrow'
   }
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
 }
 
 function groupMatchesByDate(matches: MatchWithTeams[]): Map<string, MatchWithTeams[]> {
@@ -64,39 +63,38 @@ export function MatchList({ matches, predictions, groupId, userId }: MatchListPr
 
   return (
     <div className="space-y-4">
-      {/* Group filter - Sky Sports style horizontal scroll */}
-      <div className="bg-secondary/50 rounded-lg p-2">
-        <div className="flex gap-1 overflow-x-auto pb-1">
+      {/* Group filter - Sky Sports horizontal scroll tabs */}
+      <div className="bg-white border-b border-[#e0e0e0] -mx-4 px-4 overflow-x-auto">
+        <div className="flex">
           {groups.map((g) => (
-            <Button
+            <button
               key={g}
-              variant={filter === g ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setFilter(g)}
-              className={`min-w-[44px] h-9 font-bold ${filter === g ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-4 py-2.5 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
+                filter === g 
+                  ? 'text-[#cc0000] border-[#cc0000]' 
+                  : 'text-[#666] border-transparent hover:text-[#001538]'
+              }`}
             >
-              {g === 'all' ? 'ALL' : `GRP ${g}`}
-            </Button>
+              {g === 'all' ? 'All' : `Group ${g}`}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Matches grouped by date */}
-      <div className="space-y-6">
+      {/* Matches grouped by date - Sky Sports style */}
+      <div className="space-y-0">
         {Array.from(groupedMatches.entries()).map(([dateStr, dateMatches]) => {
           const date = new Date(dateStr)
           return (
-            <div key={dateStr} className="space-y-2">
-              {/* Date header */}
-              <div className="flex items-center gap-2 px-2">
-                <span className="text-sm font-bold text-primary uppercase tracking-wide">
-                  {formatMatchDate(date)}
-                </span>
-                <div className="flex-1 h-px bg-border" />
+            <div key={dateStr}>
+              {/* Date header - Sky Sports grey bar */}
+              <div className="date-header">
+                {formatMatchDate(date)}
               </div>
 
-              {/* Match cards */}
-              <div className="space-y-1">
+              {/* Match rows */}
+              <div>
                 {dateMatches.map((match) => {
                   const prediction = predictions.get(match.id)
                   const matchDate = new Date(match.match_date)
@@ -105,93 +103,86 @@ export function MatchList({ matches, predictions, groupId, userId }: MatchListPr
                   const status = getMatchStatus(match)
 
                   return (
-                    <div key={match.id} className="bg-card rounded overflow-hidden">
-                      {/* Main match row */}
+                    <div key={match.id}>
+                      {/* Match row - Sky Sports score ticker style */}
                       <button
                         onClick={() => !isLocked && setExpandedMatch(isExpanded ? null : match.id)}
                         disabled={isLocked && !prediction}
-                        className={`w-full text-left p-3 border-l-4 transition-all ${
-                          match.is_completed ? 'border-l-muted' : 
-                          status === 'LIVE' ? 'border-l-primary' : 
-                          prediction ? 'border-l-success' : 'border-l-transparent'
-                        } ${!isLocked ? 'hover:bg-secondary/30' : ''}`}
+                        className="score-row w-full text-left"
                       >
-                        <div className="flex items-center gap-3">
-                          {/* Status badge */}
-                          <div className={`score-badge min-w-[44px] ${
-                            status === 'FT' ? 'score-badge-ft' :
-                            status === 'LIVE' ? 'score-badge-live' :
-                            status === 'HT' ? 'score-badge-ht' :
-                            'score-badge-upcoming'
-                          }`}>
-                            {status === 'upcoming' 
-                              ? matchDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-                              : status
-                            }
-                          </div>
+                        {/* Status badge */}
+                        <div className={`
+                          ${status === 'FT' ? 'badge-ft' : ''}
+                          ${status === 'LIVE' ? 'badge-live' : ''}
+                          ${status === 'HT' ? 'badge-ht' : ''}
+                          ${status === 'upcoming' ? 'badge-upcoming' : ''}
+                          min-w-[48px] text-center
+                        `}>
+                          {status === 'upcoming' 
+                            ? matchDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+                            : status
+                          }
+                        </div>
 
-                          {/* Teams and scores */}
-                          <div className="flex-1 min-w-0">
-                            {/* Home team */}
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="text-base">{match.home_team.flag_emoji}</span>
-                                <span className={`font-semibold truncate ${
-                                  match.is_completed && match.home_score !== null && match.away_score !== null && match.home_score > match.away_score
-                                    ? 'text-foreground' : 'text-muted-foreground'
-                                }`}>
-                                  {match.home_team.name}
-                                </span>
-                              </div>
-                              <span className="text-lg font-bold tabular-nums min-w-[24px] text-right">
-                                {match.is_completed ? match.home_score : prediction?.predicted_home_score ?? '-'}
-                              </span>
-                            </div>
-                            {/* Away team */}
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="text-base">{match.away_team.flag_emoji}</span>
-                                <span className={`font-semibold truncate ${
-                                  match.is_completed && match.home_score !== null && match.away_score !== null && match.away_score > match.home_score
-                                    ? 'text-foreground' : 'text-muted-foreground'
-                                }`}>
-                                  {match.away_team.name}
-                                </span>
-                              </div>
-                              <span className="text-lg font-bold tabular-nums min-w-[24px] text-right">
-                                {match.is_completed ? match.away_score : prediction?.predicted_away_score ?? '-'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Right side info */}
-                          <div className="flex flex-col items-end gap-1">
-                            {match.is_completed && prediction ? (
-                              <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                                prediction.points_earned === 5 ? 'bg-success/20 text-success' :
-                                prediction.points_earned === 3 ? 'bg-accent/20 text-accent' :
-                                prediction.points_earned === 2 ? 'bg-muted text-muted-foreground' :
-                                'bg-destructive/20 text-destructive'
+                        {/* Teams and scores */}
+                        <div className="flex-1 mx-4">
+                          {/* Home team */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">{match.home_team.flag_emoji}</span>
+                              <span className={`team-name ${
+                                match.is_completed && match.home_score !== null && match.away_score !== null && match.home_score > match.away_score
+                                  ? 'text-[#001538] font-bold' : ''
                               }`}>
-                                +{prediction.points_earned}
+                                {match.home_team.name}
                               </span>
-                            ) : isLocked ? (
-                              <Lock className="h-4 w-4 text-muted-foreground" />
-                            ) : prediction ? (
-                              <Check className="h-4 w-4 text-success" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            )}
-                            <span className="text-[10px] text-muted-foreground uppercase">
-                              Grp {match.group_letter}
+                            </div>
+                            <span className="team-score">
+                              {match.is_completed ? match.home_score : (prediction?.predicted_home_score ?? '-')}
                             </span>
                           </div>
+                          {/* Away team */}
+                          <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">{match.away_team.flag_emoji}</span>
+                              <span className={`team-name ${
+                                match.is_completed && match.home_score !== null && match.away_score !== null && match.away_score > match.home_score
+                                  ? 'text-[#001538] font-bold' : ''
+                              }`}>
+                                {match.away_team.name}
+                              </span>
+                            </div>
+                            <span className="team-score">
+                              {match.is_completed ? match.away_score : (prediction?.predicted_away_score ?? '-')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Competition & status */}
+                        <div className="flex flex-col items-end gap-1 min-w-[60px]">
+                          {match.is_completed && prediction ? (
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                              prediction.points_earned === 5 ? 'bg-green-100 text-green-700' :
+                              prediction.points_earned === 3 ? 'bg-blue-100 text-blue-700' :
+                              prediction.points_earned === 2 ? 'bg-gray-100 text-gray-600' :
+                              'bg-red-100 text-red-600'
+                            }`}>
+                              +{prediction.points_earned} pts
+                            </span>
+                          ) : isLocked ? (
+                            <Lock className="h-4 w-4 text-[#999]" />
+                          ) : prediction ? (
+                            <Check className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-[#ccc]" />
+                          )}
+                          <span className="comp-badge">WC Grp {match.group_letter}</span>
                         </div>
                       </button>
 
                       {/* Expanded prediction form */}
                       {isExpanded && !isLocked && (
-                        <div className="border-t border-border p-3 bg-secondary/30">
+                        <div className="bg-[#f8f8f8] border-b border-[#e0e0e0] p-4">
                           <PredictionForm
                             match={match}
                             groupId={groupId}
@@ -211,8 +202,8 @@ export function MatchList({ matches, predictions, groupId, userId }: MatchListPr
       </div>
 
       {filteredMatches.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground bg-card rounded-lg">
-          <p className="text-lg font-semibold">No matches found</p>
+        <div className="text-center py-12 text-[#666] bg-white border border-[#e0e0e0] rounded">
+          <p className="text-base font-semibold">No matches found</p>
           <p className="text-sm">Try selecting a different group</p>
         </div>
       )}
