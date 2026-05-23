@@ -54,8 +54,7 @@ export default async function HomePage() {
           </h2>
           
           <p className="text-[#666] text-lg max-w-lg mx-auto mb-8">
-            Predict every World Cup match. Compete against your friends. 
-            Prove you know football better than anyone.
+            Our own app to track how quickly we give up....
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
