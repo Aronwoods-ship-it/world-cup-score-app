@@ -23,10 +23,10 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ displayName, activeTab, onTabChange }: DashboardHeaderProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
 
   const handleSignOut = async () => {
     setLoading(true)
+    const supabase = createClient()
     if (supabase) {
       await supabase.auth.signOut()
     }

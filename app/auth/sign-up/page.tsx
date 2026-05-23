@@ -14,7 +14,6 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,6 +22,13 @@ export default function SignUpPage() {
 
     if (displayName.trim().length < 2) {
       setError('Display name must be at least 2 characters')
+      setLoading(false)
+      return
+    }
+
+    const supabase = createClient()
+    if (!supabase) {
+      setError('Unable to connect. Please try again.')
       setLoading(false)
       return
     }
