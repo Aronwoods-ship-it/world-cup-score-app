@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,19 +16,29 @@ import { User, LogOut, HelpCircle, ChevronDown } from 'lucide-react'
 interface DashboardHeaderProps {
   displayName: string
   userId: string
+  activeTab: string
+  onTabChange: (tab: string) => void
 }
 
-export function DashboardHeader({ displayName }: DashboardHeaderProps) {
+export function DashboardHeader({ displayName, activeTab, onTabChange }: DashboardHeaderProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
   const handleSignOut = async () => {
     setLoading(true)
-    await supabase.auth.signOut()
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     router.push('/')
     router.refresh()
   }
+
+  const tabs = [
+    { id: 'groups', label: 'My Groups' },
+    { id: 'fixtures', label: 'Fixtures' },
+    { id: 'leaderboards', label: 'Leaderboards' },
+  ]
 
   return (
     <header className="sticky top-0 z-50">
@@ -93,24 +102,19 @@ export function DashboardHeader({ displayName }: DashboardHeaderProps) {
       <nav className="bg-white border-b border-[#e0e0e0]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-0 overflow-x-auto">
-            <Link 
-              href="/dashboard" 
-              className="px-4 py-3 text-sm font-medium text-[#001538] hover:text-[#cc0000] border-b-2 border-[#cc0000] transition-colors whitespace-nowrap"
-            >
-              My Groups
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="px-4 py-3 text-sm font-medium text-[#666] hover:text-[#cc0000] border-b-2 border-transparent hover:border-[#cc0000] transition-colors whitespace-nowrap"
-            >
-              Fixtures
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="px-4 py-3 text-sm font-medium text-[#666] hover:text-[#cc0000] border-b-2 border-transparent hover:border-[#cc0000] transition-colors whitespace-nowrap"
-            >
-              Leaderboards
-            </Link>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-[#001538] border-[#cc0000]'
+                    : 'text-[#666] border-transparent hover:text-[#cc0000] hover:border-[#cc0000]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
       </nav>
