@@ -4,13 +4,18 @@ import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
 
 export function MusicPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.3
+      // Autoplay when component mounts
+      audioRef.current.play().catch(() => {
+        // Browser blocked autoplay, user needs to interact first
+        setIsPlaying(false)
+      })
     }
   }, [])
 
