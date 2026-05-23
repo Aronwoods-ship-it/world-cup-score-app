@@ -2,17 +2,30 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { Trophy, Users, Target, Calendar, Volume2 } from 'lucide-react'
+import { Trophy, Users, Target, Calendar, Volume2, VolumeX } from 'lucide-react'
+
+// Using a royalty-free DnB track as placeholder
+const AUDIO_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
 
 export function HomeContent() {
   const [hasEntered, setHasEntered] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const handleEnter = () => {
     setHasEntered(true)
     if (audioRef.current) {
       audioRef.current.volume = 0.4
-      audioRef.current.play()
+      audioRef.current.play().catch(err => {
+        console.log("[v0] Audio play failed:", err)
+      })
+    }
+  }
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !audioRef.current.muted
+      setIsMuted(!isMuted)
     }
   }
 
@@ -56,7 +69,7 @@ export function HomeContent() {
         {/* Preload audio */}
         <audio
           ref={audioRef}
-          src="https://p.scdn.co/mp3-preview/4cdef6e7f7a6b1e6c0a7e7f6b0a5c4d3b2a1e0f9"
+          src={AUDIO_URL}
           loop
           preload="auto"
         />
@@ -66,13 +79,14 @@ export function HomeContent() {
 
   return (
     <>
-      {/* Background Music - plays after entering */}
-      <audio
-        ref={audioRef}
-        src="https://p.scdn.co/mp3-preview/4cdef6e7f7a6b1e6c0a7e7f6b0a5c4d3b2a1e0f9"
-        loop
-        autoPlay
-      />
+      {/* Background Music Control */}
+      <button
+        onClick={toggleMute}
+        className="fixed bottom-4 right-4 z-50 bg-[#001538] hover:bg-[#002050] text-white p-3 rounded-full shadow-lg transition-colors"
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+      </button>
 
       {/* Header - Sky Sports style navy gradient */}
       <header className="sky-header">
