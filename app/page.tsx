@@ -49,9 +49,13 @@ export default async function HomePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-[#001538] mb-2">
             Da Boyz and Ting
           </h1>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#cc0000] mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#cc0000] mb-3">
             Scores and Ting
           </h2>
+          
+          <p className="text-[#999] text-xs font-semibold tracking-widest uppercase mb-6">
+            by Woods Labs inc.
+          </p>
           
           <p className="text-[#666] text-lg max-w-lg mx-auto mb-8">
             Our own app to track how quickly we give up....
