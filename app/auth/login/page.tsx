@@ -110,6 +110,12 @@ export default function LoginPage() {
               Sign up
             </Link>
           </p>
+          
+          <div className="flex items-center justify-center gap-2 mt-8 pt-4 border-t border-[#e0e0e0]">
+            <span className="text-[#999] text-xs">A</span>
+            <span className="text-[#666] text-xs font-semibold tracking-wide">WOODS LABS INC.</span>
+            <span className="text-[#999] text-xs">Product</span>
+          </div>
         </div>
       </div>
     </main>

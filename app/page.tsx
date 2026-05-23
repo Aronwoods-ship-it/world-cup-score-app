@@ -175,9 +175,11 @@ export default async function HomePage() {
         <p className="text-white/60 text-sm">
           FIFA World Cup 2026 - USA, Mexico, Canada
         </p>
-        <p className="text-white/40 text-xs mt-1">
-          Da Boyz and Ting Scores and Ting
-        </p>
+        <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-white/10">
+          <span className="text-white/30 text-xs">A</span>
+          <span className="text-white/50 text-xs font-semibold tracking-wide">WOODS LABS INC.</span>
+          <span className="text-white/30 text-xs">Product</span>
+        </div>
       </footer>
     </main>
   )

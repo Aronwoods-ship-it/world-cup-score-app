@@ -21,7 +21,7 @@ export default async function DashboardLayout({
     .single()
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
       <DashboardHeader 
         displayName={profile?.display_name || 'Player'} 
         userId={user.id}
@@ -29,6 +29,13 @@ export default async function DashboardLayout({
       <main className="flex-1">
         {children}
       </main>
+      <footer className="py-4 px-4 text-center border-t border-[#e0e0e0] bg-white">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-[#999] text-xs">A</span>
+          <span className="text-[#666] text-xs font-semibold tracking-wide">WOODS LABS INC.</span>
+          <span className="text-[#999] text-xs">Product</span>
+        </div>
+      </footer>
     </div>
   )
 }
