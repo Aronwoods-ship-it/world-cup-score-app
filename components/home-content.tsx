@@ -47,14 +47,9 @@ export function HomeContent() {
             Scores and Ting
           </h2>
           
-          <p className="text-[#666] text-sm font-medium tracking-wide mb-4">
+          <p className="text-[#666] text-sm font-medium tracking-wide mb-6">
             by <span className="text-[#001538] font-bold">Woods Labs inc.</span>
           </p>
-          
-          {/* Music Player */}
-          <div className="flex justify-center mb-6">
-            <MusicPlayer />
-          </div>
           
           <p className="text-[#666] text-lg max-w-lg mx-auto mb-8">
             Our own app to track how quickly we give up....
@@ -184,6 +179,9 @@ export function HomeContent() {
           <span className="text-white/30 text-xs">Product</span>
         </div>
       </footer>
+      
+      {/* Background Music */}
+      <MusicPlayer />
     </>
   )
 }
