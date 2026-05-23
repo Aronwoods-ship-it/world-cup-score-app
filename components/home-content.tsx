@@ -1,93 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { Trophy, Users, Target, Calendar, Volume2, VolumeX } from 'lucide-react'
-
-// Using a royalty-free DnB track as placeholder
-const AUDIO_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+import { Trophy, Users, Target, Calendar } from 'lucide-react'
 
 export function HomeContent() {
-  const [hasEntered, setHasEntered] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
-
-  const handleEnter = () => {
-    setHasEntered(true)
-    if (audioRef.current) {
-      audioRef.current.volume = 0.4
-      audioRef.current.play().catch(err => {
-        console.log("[v0] Audio play failed:", err)
-      })
-    }
-  }
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !audioRef.current.muted
-      setIsMuted(!isMuted)
-    }
-  }
-
-  // Splash screen
-  if (!hasEntered) {
-    return (
-      <div 
-        className="min-h-screen bg-[#001538] flex flex-col items-center justify-center px-6 cursor-pointer"
-        onClick={handleEnter}
-      >
-        <div className="text-center">
-          <div className="inline-block mb-8">
-            <span className="bg-[#cc0000] text-white text-xs font-bold px-4 py-2 rounded uppercase tracking-wider">
-              World Cup 2026
-            </span>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">
-            Da Boyz and Ting
-          </h1>
-          <h2 className="text-2xl md:text-4xl font-bold text-[#cc0000] mb-4">
-            Scores and Ting
-          </h2>
-          
-          <p className="text-white/50 text-sm font-medium tracking-wide mb-12">
-            by <span className="text-white/70 font-bold">Woods Labs inc.</span>
-          </p>
-
-          <button 
-            className="bg-[#cc0000] hover:bg-[#aa0000] text-white text-lg font-bold px-12 py-4 rounded transition-colors animate-pulse"
-          >
-            TAP TO ENTER
-          </button>
-          
-          <div className="flex items-center justify-center gap-2 mt-8 text-white/40">
-            <Volume2 className="w-4 h-4" />
-            <span className="text-xs">Sound on for full experience</span>
-          </div>
-        </div>
-
-        {/* Preload audio */}
-        <audio
-          ref={audioRef}
-          src={AUDIO_URL}
-          loop
-          preload="auto"
-        />
-      </div>
-    )
-  }
-
   return (
     <>
-      {/* Background Music Control */}
-      <button
-        onClick={toggleMute}
-        className="fixed bottom-4 right-4 z-50 bg-[#001538] hover:bg-[#002050] text-white p-3 rounded-full shadow-lg transition-colors"
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-      </button>
-
       {/* Header - Sky Sports style navy gradient */}
       <header className="sky-header">
         <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between">
@@ -128,9 +46,22 @@ export function HomeContent() {
             Scores and Ting
           </h2>
           
-          <p className="text-[#666] text-sm font-medium tracking-wide mb-6">
+          <p className="text-[#666] text-sm font-medium tracking-wide mb-4">
             by <span className="text-[#001538] font-bold">Woods Labs inc.</span>
           </p>
+          
+          {/* Spotify Embed */}
+          <div className="flex justify-center mb-6">
+            <iframe 
+              src="https://open.spotify.com/embed/track/1Mze7crzF9BWo82DiAsmjj?utm_source=generator&theme=0" 
+              width="300" 
+              height="80" 
+              frameBorder="0" 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              loading="lazy"
+              className="rounded-lg"
+            />
+          </div>
           
           <p className="text-[#666] text-lg max-w-lg mx-auto mb-8">
             Our own app to track how quickly we give up....
