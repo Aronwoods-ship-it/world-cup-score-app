@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DashboardHeader } from '@/components/dashboard-header'
+import { DashboardClient } from '@/components/dashboard-client'
 
 export default async function DashboardLayout({
   children,
@@ -25,22 +25,28 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single()
 
+  // Get user's groups
+  const { data: memberships } = await supabase
+    .from('group_members')
+    .select(`
+      group_id,
+      groups (
+        id,
+        name,
+        invite_code,
+        created_by,
+        created_at
+      )
+    `)
+    .eq('user_id', user.id)
+
+  const groups = memberships?.map(m => m.groups).filter(Boolean) || []
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#f5f5f5]">
-      <DashboardHeader 
-        displayName={profile?.display_name || 'Player'} 
-        userId={user.id}
-      />
-      <main className="flex-1">
-        {children}
-      </main>
-      <footer className="py-4 px-4 text-center border-t border-[#e0e0e0] bg-white">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-[#999] text-xs">A</span>
-          <span className="text-[#666] text-xs font-semibold tracking-wide">WOODS LABS INC.</span>
-          <span className="text-[#999] text-xs">Product</span>
-        </div>
-      </footer>
-    </div>
+    <DashboardClient 
+      displayName={profile?.display_name || 'Player'} 
+      userId={user.id}
+      groups={groups as any}
+    />
   )
 }
