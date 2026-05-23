@@ -72,7 +72,7 @@ export function HomeContent() {
               href="/auth/sign-up"
               className="bg-[#cc0000] hover:bg-[#aa0000] text-white text-base font-bold px-8 py-3 rounded transition-colors"
             >
-              Get Started Free
+              Sign Up First Boyz
             </Link>
             <Link 
               href="/auth/login"
