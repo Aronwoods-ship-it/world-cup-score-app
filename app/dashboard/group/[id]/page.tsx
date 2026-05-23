@@ -12,6 +12,9 @@ interface GroupPageProps {
 export default async function GroupPage({ params }: GroupPageProps) {
   const { id } = await params
   const supabase = await createClient()
+  
+  if (!supabase) return null
+  
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return null

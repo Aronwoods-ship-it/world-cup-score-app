@@ -4,10 +4,12 @@ import { HomeContent } from '@/components/home-content'
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect('/dashboard')
+  
+  if (supabase) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      redirect('/dashboard')
+    }
   }
 
   return (
