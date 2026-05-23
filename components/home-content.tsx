@@ -1,19 +1,12 @@
+'use client'
+
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { Trophy, Users, Target, Calendar } from 'lucide-react'
 import { MusicPlayer } from '@/components/music-player'
 
-export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect('/dashboard')
-  }
-
+export function HomeContent() {
   return (
-    <main className="min-h-screen flex flex-col bg-[#f5f5f5]">
+    <>
       {/* Header - Sky Sports style navy gradient */}
       <header className="sky-header">
         <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between">
@@ -54,7 +47,7 @@ export default async function HomePage() {
             Scores and Ting
           </h2>
           
-          <p className="text-[#666] text-sm font-medium tracking-wide mb-6">
+          <p className="text-[#666] text-sm font-medium tracking-wide mb-4">
             by <span className="text-[#001538] font-bold">Woods Labs inc.</span>
           </p>
           
@@ -191,6 +184,6 @@ export default async function HomePage() {
           <span className="text-white/30 text-xs">Product</span>
         </div>
       </footer>
-    </main>
+    </>
   )
 }
