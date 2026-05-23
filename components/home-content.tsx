@@ -1,12 +1,79 @@
 'use client'
 
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { Trophy, Users, Target, Calendar } from 'lucide-react'
-import { MusicPlayer } from '@/components/music-player'
+import { Trophy, Users, Target, Calendar, Volume2 } from 'lucide-react'
 
 export function HomeContent() {
+  const [hasEntered, setHasEntered] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(null)
+
+  const handleEnter = () => {
+    setHasEntered(true)
+    if (audioRef.current) {
+      audioRef.current.volume = 0.4
+      audioRef.current.play()
+    }
+  }
+
+  // Splash screen
+  if (!hasEntered) {
+    return (
+      <div 
+        className="min-h-screen bg-[#001538] flex flex-col items-center justify-center px-6 cursor-pointer"
+        onClick={handleEnter}
+      >
+        <div className="text-center">
+          <div className="inline-block mb-8">
+            <span className="bg-[#cc0000] text-white text-xs font-bold px-4 py-2 rounded uppercase tracking-wider">
+              World Cup 2026
+            </span>
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">
+            Da Boyz and Ting
+          </h1>
+          <h2 className="text-2xl md:text-4xl font-bold text-[#cc0000] mb-4">
+            Scores and Ting
+          </h2>
+          
+          <p className="text-white/50 text-sm font-medium tracking-wide mb-12">
+            by <span className="text-white/70 font-bold">Woods Labs inc.</span>
+          </p>
+
+          <button 
+            className="bg-[#cc0000] hover:bg-[#aa0000] text-white text-lg font-bold px-12 py-4 rounded transition-colors animate-pulse"
+          >
+            TAP TO ENTER
+          </button>
+          
+          <div className="flex items-center justify-center gap-2 mt-8 text-white/40">
+            <Volume2 className="w-4 h-4" />
+            <span className="text-xs">Sound on for full experience</span>
+          </div>
+        </div>
+
+        {/* Preload audio */}
+        <audio
+          ref={audioRef}
+          src="https://p.scdn.co/mp3-preview/4cdef6e7f7a6b1e6c0a7e7f6b0a5c4d3b2a1e0f9"
+          loop
+          preload="auto"
+        />
+      </div>
+    )
+  }
+
   return (
     <>
+      {/* Background Music - plays after entering */}
+      <audio
+        ref={audioRef}
+        src="https://p.scdn.co/mp3-preview/4cdef6e7f7a6b1e6c0a7e7f6b0a5c4d3b2a1e0f9"
+        loop
+        autoPlay
+      />
+
       {/* Header - Sky Sports style navy gradient */}
       <header className="sky-header">
         <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between">
@@ -179,9 +246,6 @@ export function HomeContent() {
           <span className="text-white/30 text-xs">Product</span>
         </div>
       </footer>
-      
-      {/* Background Music */}
-      <MusicPlayer />
     </>
   )
 }
