@@ -89,9 +89,19 @@ export default async function GroupPage({ params }: GroupPageProps) {
       <GroupInfo group={group} memberCount={membersList.length} />
 
       <Tabs defaultValue="matches" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="matches">Matches</TabsTrigger>
-          <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+        <TabsList className="w-full bg-[#e5e5e5] p-1 rounded-lg">
+          <TabsTrigger 
+            value="matches" 
+            className="flex-1 py-3 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-[#001538] data-[state=active]:shadow-sm rounded-md text-[#666]"
+          >
+            Matches
+          </TabsTrigger>
+          <TabsTrigger 
+            value="leaderboard"
+            className="flex-1 py-3 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-[#001538] data-[state=active]:shadow-sm rounded-md text-[#666]"
+          >
+            Leaderboard
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="matches" className="mt-6">
