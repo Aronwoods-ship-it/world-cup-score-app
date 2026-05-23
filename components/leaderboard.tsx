@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import type { Prediction, MatchWithTeams } from '@/lib/types'
 import { Trophy, Target, TrendingUp } from 'lucide-react'
+import { players, getRandomRoast } from '@/lib/players'
 
 interface LeaderboardProps {
   members: { user_id: string; display_name: string }[]
@@ -18,6 +19,7 @@ type LeaderboardEntry = {
   predictions_count: number
   exact_scores: number
   correct_results: number
+  playerId?: string
 }
 
 function calculatePoints(
@@ -45,6 +47,16 @@ function calculatePoints(
   }
 
   return { points: 0, isExact: false, isCorrectResult: false }
+}
+
+// Match display name to player data
+function findPlayer(displayName: string) {
+  const nameLower = displayName.toLowerCase()
+  return players.find(p => 
+    nameLower.includes(p.id) || 
+    nameLower.includes(p.name.toLowerCase()) ||
+    (p.nickname && nameLower.includes(p.nickname.toLowerCase()))
+  )
 }
 
 export function Leaderboard({ members, predictions, matches, currentUserId }: LeaderboardProps) {
@@ -75,6 +87,8 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
         }
       })
 
+      const player = findPlayer(member.display_name)
+
       return {
         user_id: member.user_id,
         display_name: member.display_name,
@@ -82,6 +96,7 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
         predictions_count,
         exact_scores,
         correct_results,
+        playerId: player?.id,
       }
     })
 
@@ -93,6 +108,13 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
   }, [members, predictions, matches])
 
   const completedMatchCount = matches.filter(m => m.is_completed).length
+
+  // Get roasts for top and bottom players
+  const topPlayer = leaderboard[0]
+  const bottomPlayer = leaderboard.length > 1 ? leaderboard[leaderboard.length - 1] : null
+  
+  const topRoast = topPlayer?.playerId ? getRandomRoast(topPlayer.playerId, 'topOfLeaderboard') : null
+  const bottomRoast = bottomPlayer?.playerId ? getRandomRoast(bottomPlayer.playerId, 'bottomOfLeaderboard') : null
 
   return (
     <div className="bg-white border border-[#e0e0e0] rounded overflow-hidden">
@@ -108,6 +130,15 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
           </span>
         </div>
       </div>
+
+      {/* Roast banner for top player */}
+      {topRoast && completedMatchCount > 0 && (
+        <div className="bg-gradient-to-r from-[#b8860b]/10 to-[#ffd700]/10 border-b border-[#b8860b]/30 px-4 py-3">
+          <p className="text-sm text-[#8b6914] italic text-center">
+            &ldquo;{topRoast}&rdquo;
+          </p>
+        </div>
+      )}
 
       {/* Table header */}
       <div className="bg-[#f5f5f5] px-4 py-2 grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 text-xs font-semibold text-[#666] uppercase border-b border-[#e0e0e0]">
@@ -133,6 +164,7 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
           {leaderboard.map((entry, index) => {
             const isCurrentUser = entry.user_id === currentUserId
             const position = index + 1
+            const player = entry.playerId ? players.find(p => p.id === entry.playerId) : null
             
             return (
               <div
@@ -151,12 +183,17 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
                   {position}
                 </div>
 
-                {/* Name */}
+                {/* Name and traits */}
                 <div className="min-w-0">
                   <p className={`font-semibold text-sm truncate ${isCurrentUser ? 'text-[#cc0000]' : 'text-[#001538]'}`}>
                     {entry.display_name}
                     {isCurrentUser && <span className="text-[10px] text-[#cc0000] ml-1">(You)</span>}
                   </p>
+                  {player && (
+                    <p className="text-[10px] text-[#999] truncate">
+                      {player.team} &bull; {player.traits.slice(0, 2).join(', ')}
+                    </p>
+                  )}
                 </div>
 
                 {/* Exact scores */}
@@ -183,6 +220,15 @@ export function Leaderboard({ members, predictions, matches, currentUserId }: Le
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Roast banner for bottom player */}
+      {bottomRoast && completedMatchCount > 0 && leaderboard.length > 1 && (
+        <div className="bg-gradient-to-r from-[#cc0000]/5 to-[#ff6666]/5 border-t border-[#cc0000]/20 px-4 py-3">
+          <p className="text-sm text-[#cc0000]/80 italic text-center">
+            &ldquo;{bottomRoast}&rdquo;
+          </p>
         </div>
       )}
 
