@@ -195,4 +195,47 @@ export const players: Player[] = [
         "Streak ended. Like waiting for a taxi that never comes.",
       ],
       perfectScore: [
-        "Perfect score! THE SAND PROVIDE
+        "Perfect score! THE SAND PROVIDED. Absolutely dench.",
+      ],
+      noPrediction: [
+        "Yousif - eating sand",
+        "Yousif - waiting for taxi",
+        "Yousif - sand got in his phone",
+      ],
+      comparison: [
+        "Yousif beat {opponent} despite the sand diet",
+        "Even with late taxis, Yousif's ahead of {opponent}",
+        "Sand-powered victory over {opponent}",
+      ],
+    },
+  },
+]
+
+// Helper functions
+export function getPlayerById(id: string): Player | undefined {
+  return players.find(p => p.id.toLowerCase() === id.toLowerCase())
+}
+
+export function getPlayerByName(name: string): Player | undefined {
+  const nameLower = name.toLowerCase()
+  return players.find(p => 
+    p.name.toLowerCase().includes(nameLower) || 
+    nameLower.includes(p.name.toLowerCase()) ||
+    nameLower.includes(p.id.toLowerCase())
+  )
+}
+
+export function getRandomRoast(player: Player, type: keyof Player['roasts']): string {
+  const roasts = player.roasts[type]
+  if (!roasts || roasts.length === 0) return ""
+  return roasts[Math.floor(Math.random() * roasts.length)]
+}
+
+export function getComparisonRoast(winner: Player, loser: Player): string {
+  const comparisons = winner.roasts.comparison
+  if (comparisons && comparisons.length > 0) {
+    const template = comparisons[Math.floor(Math.random() * comparisons.length)]
+    return template.replace("{opponent}", loser.name)
+  }
+  return `${winner.name} beat ${loser.name}. Dench vs Noish.`
+}
