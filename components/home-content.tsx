@@ -78,7 +78,7 @@ export function HomeContent() {
               href="/auth/login"
               className="bg-white hover:bg-[#f5f5f5] text-[#001538] text-base font-semibold px-8 py-3 rounded border border-[#e0e0e0] transition-colors"
             >
-              I Have an Account
+              Let&apos;s Get Lively
             </Link>
           </div>
         </div>
