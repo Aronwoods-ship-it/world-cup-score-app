@@ -26,32 +26,32 @@ export default function SignUpPage() {
       return
     }
 
-    const supabase = createClient()
-    if (!supabase) {
-      setError('Unable to connect. Please try again.')
-      setLoading(false)
-      return
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? 
-          `${window.location.origin}/auth/callback`,
-        data: {
-          display_name: displayName.trim(),
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? 
+            `${window.location.origin}/auth/callback`,
+          data: {
+            display_name: displayName.trim(),
+          },
         },
-      },
-    })
+      })
 
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      router.push('/dashboard')
+    } catch (err) {
+      console.error('[v0] Sign up error:', err)
+      setError('Something went wrong. Please try again.')
       setLoading(false)
-      return
     }
-
-    router.push('/auth/sign-up-success')
   }
 
   return (
