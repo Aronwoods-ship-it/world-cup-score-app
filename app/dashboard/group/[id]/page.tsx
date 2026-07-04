@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ChevronLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MatchList } from '@/components/match-list'
@@ -85,8 +87,25 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const predictionsMap = new Map(predictions?.map(p => [p.match_id, p]) || [])
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
-      <GroupInfo group={group} memberCount={membersList.length} />
+    <div className="min-h-screen bg-[#f5f5f5]">
+      <header className="sticky top-0 z-50 sky-header">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="h-12 flex items-center justify-between">
+            <Link href="/dashboard" className="flex items-center gap-1 text-white/90 hover:text-white text-sm font-medium transition-colors">
+              <ChevronLeft className="h-5 w-5" />
+              Back
+            </Link>
+            <div className="flex items-center gap-1.5">
+              <span className="text-white font-light text-lg tracking-tight">da boyz</span>
+              <span className="bg-[#cc0000] text-white font-bold text-sm px-1.5 py-0.5 rounded-sm">scores</span>
+            </div>
+            <div className="w-12" />
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
+        <GroupInfo group={group} memberCount={membersList.length} />
 
       <Tabs defaultValue="matches" className="w-full">
         <TabsList className="w-full bg-[#e5e5e5] p-1 rounded-lg">
@@ -122,6 +141,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
           />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   )
 }

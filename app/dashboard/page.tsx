@@ -1,4 +1,43 @@
-export default function DashboardPage() {
-  // Content is rendered by layout.tsx via DashboardClient
-  return null
+import { createClient } from '@/lib/supabase/server'
+import { DashboardClient } from '@/components/dashboard-client'
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+
+  if (!supabase) return null
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  // Get user's groups
+  const { data: memberships } = await supabase
+    .from('group_members')
+    .select(`
+      group_id,
+      groups (
+        id,
+        name,
+        invite_code,
+        created_by,
+        created_at
+      )
+    `)
+    .eq('user_id', user.id)
+
+  const groups = memberships?.map(m => m.groups).filter(Boolean) || []
+
+  return (
+    <DashboardClient
+      displayName={profile?.display_name || 'Player'}
+      userId={user.id}
+      groups={groups as any}
+    />
+  )
 }
